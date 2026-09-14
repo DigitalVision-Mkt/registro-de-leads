@@ -542,6 +542,49 @@
     align-self:center;
   }
 
+  .print-title, .print-date{
+    display:none;
+  }
+
+  .print-btn{
+    width:100%;
+    border: 1.5px solid var(--line);
+    background: var(--sage-soft);
+    color: var(--sage-deep);
+    padding: 13px 16px;
+    border-radius: 14px;
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size: 14px;
+    cursor:pointer;
+    margin-bottom: 18px;
+  }
+  .print-btn:active{ transform: scale(0.98); }
+
+  @media print{
+    body{ background: #fff; }
+    .app{ box-shadow:none; border-radius:0; max-width:100%; min-height:0; }
+    .no-print{ display:none !important; }
+    .print-title{
+      display:block;
+      font-family:'Fraunces', serif;
+      font-size: 20px;
+      font-weight:600;
+      color:#000;
+      margin-bottom: 2px;
+    }
+    .print-date{
+      display:block;
+      font-size: 12px;
+      color:#555;
+      margin-bottom: 18px;
+    }
+    .resumo{ padding: 10px 4px; }
+    .contact-phone{ color:#000 !important; text-decoration:none; }
+    .origem-row, .contact-row{ break-inside: avoid; }
+  }
+
+
 </style>
 </head>
 <body>
@@ -604,27 +647,32 @@
 
   <!-- RESUMO -->
   <div class="resumo" id="screen-resumo">
-    <div class="resumo-header">
+    <div class="resumo-header no-print">
       <div class="resumo-title">Resumo</div>
       <button class="close-resumo" id="closeResumo">fechar</button>
     </div>
 
-    <div class="filters" id="filters">
+    <div class="print-title">Resumo de Leads - Dra. Cristiane Lima</div>
+    <div class="print-date" id="printDate"></div>
+
+    <div class="filters no-print" id="filters">
       <button class="filter-btn active" data-range="hoje">Hoje</button>
       <button class="filter-btn" data-range="7">7 dias</button>
       <button class="filter-btn" data-range="mes-atual">Este mes</button>
       <button class="filter-btn" data-range="tudo">Tudo</button>
     </div>
 
-    <select class="month-select" id="mesSelect">
+    <select class="month-select no-print" id="mesSelect">
       <option value="">Ou escolha um mes especifico...</option>
     </select>
+
+    <button class="print-btn no-print" id="printBtn">&#128190; Salvar em PDF / Imprimir</button>
 
     <div id="resumoBody">
       <div class="empty-state"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></div>
     </div>
 
-    <button class="danger-link" id="clearDataBtn">como apagar dados de teste</button>
+    <button class="danger-link no-print" id="clearDataBtn">como apagar dados de teste</button>
   </div>
 
   <!-- EDITAR TEMAS -->
@@ -792,7 +840,11 @@
     ["screen-dados","screen-origem","screen-status","screen-confirm","screen-editar"].forEach(id=> el(id).classList.remove("active"));
     el("dots").style.display = "none";
     el("screen-resumo").classList.add("active");
+    el("printDate").textContent = "Gerado em " + new Date().toLocaleDateString("pt-BR") + " as " + new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
     loadResumo();
+  });
+  el("printBtn").addEventListener("click", ()=>{
+    window.print();
   });
   el("closeResumo").addEventListener("click", ()=>{
     el("screen-resumo").classList.remove("active");
@@ -969,7 +1021,7 @@
     });
 
     html += '<div class="section-label" style="margin-top:22px;">Contatos</div>';
-    html += '<div class="filters" style="margin-bottom:14px;">';
+    html += '<div class="filters no-print" style="margin-bottom:14px;">';
     const statusOptions = [
       ["todos", "Todos"],
       ["Nao fechou", "Nao marcou"],
